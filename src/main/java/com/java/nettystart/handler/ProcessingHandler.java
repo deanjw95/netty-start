@@ -15,7 +15,7 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         RequestData requestData = (RequestData) msg;
         ResponseData responseData = new ResponseData();
-        responseData.setIntValue(requestData.getIntValue());
+        responseData.setIntValue(requestData.getIntValue() * 2);
         ChannelFuture future = ctx.writeAndFlush(responseData);
         future.addListener(ChannelFutureListener.CLOSE);
         log.info("{}", requestData);

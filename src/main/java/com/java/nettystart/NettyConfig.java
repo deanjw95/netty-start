@@ -11,18 +11,20 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class NettyConfig {
 
-    @Bean
+    @Bean(destroyMethod = "shutdownGracefully")
     public EventLoopGroup bossGroup() {
         return new NioEventLoopGroup();
     }
 
-    @Bean
+    @Bean(destroyMethod = "shutdownGracefully")
     public EventLoopGroup workerGroup() {
         return new NioEventLoopGroup();
     }
@@ -32,8 +34,9 @@ public class NettyConfig {
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup(), workerGroup())
                 .channel(NioServerSocketChannel.class)
+                .handler(new LoggingHandler(LogLevel.DEBUG))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
-                    // 올바른 순서로 요청 및 출력을 처리할 인바운드 및 아웃바운드 핸들러를 정의합니다.
+                    // 올바른 순서로 요청 및 출력을 처리할 인바운드 및 아웃바운드 핸들러를 정의
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new RequestDecoder(), new ResponseDataEncoder(), new ProcessingHandler());

@@ -23,6 +23,7 @@ public class NettyService {
     @PreDestroy
     public void stopServer() {
         if (f != null) {
+            f.channel().close();
             f.channel().closeFuture();
         }
     }
